@@ -4,10 +4,12 @@ use App\Http\Controllers\Accounting\AccountingController;
 use App\Http\Controllers\Sales\CustomerController;
 use App\Http\Controllers\Sales\SalesOrderController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Inventory\InventoryController;
 use App\Http\Controllers\Procurement\ProcurementController;
 use App\Http\Controllers\Production\ProductionController;
 use App\Http\Controllers\System\AuditTrailController;
+use App\Http\Controllers\System\ProfileController;
 use App\Http\Controllers\System\StaffController;
 use Illuminate\Support\Facades\Route;
 
@@ -193,9 +195,16 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:admin');
 
     // Profile
-    Route::get('/profile', function () {
-        return view('profile.edit');
-    })->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
+
+    // Password
+    Route::put('/password', [PasswordController::class, 'update'])
+        ->name('password.update');
 
     // Customers CRUD
     Route::resource('customers', CustomerController::class)

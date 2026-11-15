@@ -87,8 +87,9 @@ class="relative z-50"
 
         <!-- User Profile Card -->
         <div class="px-3 mt-2 relative z-10">
-            <div class="bg-slate-800/40 backdrop-blur-sm rounded-lg border border-slate-700/30 p-2 transition-all duration-300 group hover:bg-slate-700/50 hover:border-slate-600"
-                 :class="sidebarOpen ? 'flex items-center gap-2.5' : 'flex justify-center'">
+            <a href="{{ route('profile.edit') }}" title="My Profile"
+               class="block bg-slate-800/40 backdrop-blur-sm rounded-lg border p-2 transition-all duration-300 group hover:bg-slate-700/50 hover:border-slate-600 {{ request()->routeIs('profile.*') ? 'border-orange-500/60 ring-1 ring-orange-500/30' : 'border-slate-700/30' }}"
+               :class="sidebarOpen ? 'flex items-center gap-2.5' : 'flex justify-center'">
                 
                 <div class="w-8 h-8 rounded bg-gradient-to-br from-yellow-500 to-orange-500 p-0.5 shadow-lg shadow-indigo-500/20 shrink-0">
                     <div class="w-full h-full bg-slate-900 rounded-[3px] flex items-center justify-center text-white font-bold text-[10px]">
@@ -107,7 +108,7 @@ class="relative z-50"
                         <p class="text-[9px] text-slate-500 truncate">{{ ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'User')) }}</p>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- Navigation -->
