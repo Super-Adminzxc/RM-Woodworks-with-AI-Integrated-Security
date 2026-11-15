@@ -6,10 +6,15 @@ use App\Models\Procurement\Supplier;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Material>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Inventory\Material>
  */
 class MaterialFactory extends Factory
 {
+    /**
+     * The name of the factory's corresponding model.
+     */
+    protected $model = \App\Models\Inventory\Material::class;
+
     /**
      * Define the model's default state.
      *
