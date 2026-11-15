@@ -19,7 +19,7 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'admin']);
 
         $response = $this->post('/login', [
             'email' => $user->email,
@@ -28,6 +28,30 @@ class AuthenticationTest extends TestCase
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_each_role_is_redirected_to_its_own_home(): void
+    {
+        $expectedHomes = [
+            'admin' => 'dashboard',
+            'inventory_clerk' => 'inventory',
+            'procurement_officer' => 'procurement',
+            'workshop_staff' => 'production',
+            'sales_clerk' => 'sales',
+            'accounting_staff' => 'dashboard',
+        ];
+
+        foreach ($expectedHomes as $role => $homeRoute) {
+            $user = User::factory()->create(['role' => $role]);
+
+            $response = $this->post('/login', [
+                'email' => $user->email,
+                'password' => 'password',
+            ]);
+
+            $response->assertRedirect(route($homeRoute, absolute: false));
+            $this->post('/logout');
+        }
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
@@ -49,6 +73,6 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
-        $response->assertRedirect('/');
+        $response->assertRedirect(route('login', absolute: false));
     }
 }
