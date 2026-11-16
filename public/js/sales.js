@@ -261,8 +261,10 @@
 			emailInput?.addEventListener('blur', () => validateContactMethod(phoneInput, emailInput, contactError));
 		});
 
-		// default: sales tab
-		setMode('sales');
+		// Honour ?tab=customers (used when redirecting back after customer
+		// create/update/delete, or from /customers), otherwise show sales.
+		const requestedTab = new URLSearchParams(window.location.search).get('tab');
+		setMode(requestedTab === 'customers' ? 'customers' : 'sales');
 	})();
 
 // ---- Sales Multi-Row Product Functions ----

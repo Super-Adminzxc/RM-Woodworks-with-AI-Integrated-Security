@@ -9,8 +9,9 @@ use Illuminate\Http\Request;
 class CustomerController extends Controller
 {
 	public function index() {
-		$customers = Customer::all();
-		return view('customers.index', compact('customers'));
+		// Customers are managed on the sales page (Customers tab); there is no
+		// separate customers index view, so send visitors there instead.
+		return redirect()->route('sales-orders.index', ['tab' => 'customers']);
 	}
 
 	public function store(Request $request) {

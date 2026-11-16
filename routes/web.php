@@ -206,7 +206,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/password', [PasswordController::class, 'update'])
         ->name('password.update');
 
-    // Customers CRUD
+    // Customers CRUD (create/show/edit are not implemented; customers are
+    // managed from the sales page, so those routes are omitted entirely)
     Route::resource('customers', CustomerController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
         ->middleware('role:admin,sales_clerk');
 });

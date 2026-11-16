@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
-    protected $fillable = ['name', 'customer_type', 'phone', 'email'];
+    protected $fillable = ['name', 'customer_type', 'phone', 'email', 'address'];
 
     public function salesOrders()
     {
