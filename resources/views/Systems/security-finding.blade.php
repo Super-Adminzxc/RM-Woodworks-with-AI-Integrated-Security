@@ -366,8 +366,8 @@
             </div>
 
             <!-- E. Human verification -->
-            <aside class="space-y-5">
-                <section class="bg-white rounded-2xl border-2 border-emerald-200 shadow-sm overflow-hidden xl:sticky xl:top-0">
+            <aside class="space-y-5 xl:self-start">
+                <section class="bg-white rounded-2xl border-2 border-emerald-200 shadow-sm overflow-hidden">
                     <div class="px-5 py-4 border-b border-emerald-100 bg-emerald-50">
                         <h2 class="text-sm font-extrabold text-gray-800">E. Human Verification</h2>
                         <p class="text-[11px] text-gray-600 mt-0.5">Only the assessor can change this decision</p>
