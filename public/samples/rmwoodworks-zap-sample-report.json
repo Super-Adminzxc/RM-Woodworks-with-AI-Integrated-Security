@@ -1,0 +1,179 @@
+{
+  "@version": "2.15.0",
+  "@generated": "2026-11-25T09:00:00Z",
+  "@programName": "RM Woodworks SecureScan SAMPLE FIXTURE - NOT A LIVE SCAN",
+  "sample_data": true,
+  "sample_notice": "Clearly labeled sample data for interface testing only. This is not a real OWASP ZAP scan and must not be presented as genuine assessment evidence.",
+  "site": [
+    {
+      "@name": "http://localhost:8000",
+      "@host": "localhost",
+      "@port": "8000",
+      "@ssl": "false",
+      "alerts": [
+        {
+          "pluginid": "90020",
+          "alert": "Remote OS Command Injection",
+          "name": "Remote OS Command Injection",
+          "riskcode": "3",
+          "confidence": "2",
+          "riskdesc": "Critical (Medium)",
+          "desc": "<p>The scanner detected a parameter that may be passed to an operating system command.</p><p>This is a sample alert used to demonstrate the SecureScan review workflow.</p>",
+          "instances": [
+            {
+              "uri": "http://localhost:8000/reports/export?format=pdf",
+              "method": "GET",
+              "param": "format",
+              "evidence": "Command execution error near 'pdf'"
+            }
+          ],
+          "solution": "<p>Avoid passing user-controlled input to shell commands. Use framework APIs or strict allowlists instead.</p>",
+          "reference": "<p>https://owasp.org/www-community/attacks/Command_Injection</p>",
+          "cweid": "78",
+          "wascid": "31",
+          "sourceid": "1"
+        },
+        {
+          "pluginid": "40018",
+          "alert": "SQL Injection",
+          "name": "SQL Injection",
+          "riskcode": "3",
+          "confidence": "2",
+          "riskdesc": "High (Medium)",
+          "desc": "<p>SQL injection may be possible. The scanner identified that a parameter appears to be incorporated into a SQL statement without sufficient validation.</p><p>This is a sample alert used to demonstrate the SecureScan review workflow.</p>",
+          "instances": [
+            {
+              "uri": "http://localhost:8000/products/search?q=test%27",
+              "method": "GET",
+              "param": "q",
+              "evidence": "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version"
+            },
+            {
+              "uri": "http://localhost:8000/customers?filter=name",
+              "method": "GET",
+              "param": "filter",
+              "evidence": "SQL syntax error near 'name'"
+            }
+          ],
+          "solution": "<p>Use parameterized queries or prepared statements for every database query. Validate and whitelist input where appropriate, and avoid concatenating user input into SQL strings.</p>",
+          "reference": "<p>https://owasp.org/www-community/attacks/SQL_Injection</p><p>https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html</p>",
+          "cweid": "89",
+          "wascid": "19",
+          "sourceid": "1"
+        },
+        {
+          "pluginid": "40012",
+          "alert": "Cross Site Scripting (Reflected)",
+          "name": "Cross Site Scripting (Reflected)",
+          "riskcode": "2",
+          "confidence": "3",
+          "riskdesc": "Medium (High)",
+          "desc": "<p>Reflected cross-site scripting may be possible because user input appears in the response without adequate output encoding.</p><p>This is a sample alert used to demonstrate the SecureScan review workflow.</p>",
+          "instances": [
+            {
+              "uri": "http://localhost:8000/products?search=%3Cscript%3Ealert(1)%3C%2Fscript%3E",
+              "method": "GET",
+              "param": "search",
+              "evidence": "<script>alert(1)</script>"
+            }
+          ],
+          "solution": "<p>Encode output contextually and validate input. In Laravel Blade, rely on escaped output with {{ }} and avoid unescaped rendering of user-controlled values.</p>",
+          "reference": "<p>https://owasp.org/www-community/attacks/xss/</p>",
+          "cweid": "79",
+          "wascid": "8",
+          "sourceid": "1"
+        },
+        {
+          "pluginid": "10020",
+          "alert": "Missing Anti-clickjacking Header",
+          "name": "Missing Anti-clickjacking Header",
+          "riskcode": "2",
+          "confidence": "2",
+          "riskdesc": "Medium (Medium)",
+          "desc": "<p>The response does not include an X-Frame-Options header or a suitable Content-Security-Policy frame-ancestors directive.</p><p>This is a sample alert used to demonstrate the SecureScan review workflow.</p>",
+          "instances": [
+            {
+              "uri": "http://localhost:8000/dashboard",
+              "method": "GET",
+              "evidence": "X-Frame-Options header is missing"
+            },
+            {
+              "uri": "http://localhost:8000/login",
+              "method": "GET",
+              "evidence": "Content-Security-Policy frame-ancestors directive is missing"
+            }
+          ],
+          "solution": "<p>Return an X-Frame-Options: DENY or SAMEORIGIN header, or use a Content-Security-Policy frame-ancestors directive to control framing.</p>",
+          "reference": "<p>https://owasp.org/www-project-web-security-testing-guide/</p>",
+          "cweid": "1021",
+          "wascid": "15",
+          "sourceid": "1"
+        },
+        {
+          "pluginid": "10010",
+          "alert": "Cookie No HttpOnly Flag",
+          "name": "Cookie No HttpOnly Flag",
+          "riskcode": "1",
+          "confidence": "2",
+          "riskdesc": "Low (Medium)",
+          "desc": "<p>A cookie was set without the HttpOnly flag, which may allow client-side scripts to read it.</p><p>This is a sample alert used to demonstrate the SecureScan review workflow.</p>",
+          "instances": [
+            {
+              "uri": "http://localhost:8000/login",
+              "method": "POST",
+              "param": "session",
+              "evidence": "Set-Cookie: session=example-value; path=/"
+            }
+          ],
+          "solution": "<p>Set the HttpOnly flag on session and authentication cookies. Also use Secure and SameSite attributes where appropriate.</p>",
+          "reference": "<p>https://owasp.org/www-community/HttpOnly</p>",
+          "cweid": "1004",
+          "wascid": "13",
+          "sourceid": "1"
+        },
+        {
+          "pluginid": "10038",
+          "alert": "Content Security Policy (CSP) Header Not Set",
+          "name": "Content Security Policy (CSP) Header Not Set",
+          "riskcode": "2",
+          "confidence": "2",
+          "riskdesc": "Medium (Medium)",
+          "desc": "<p>The response does not include a Content-Security-Policy header. A CSP can reduce the impact of certain injection flaws.</p><p>This is a sample alert used to demonstrate the SecureScan review workflow.</p>",
+          "instances": [
+            {
+              "uri": "http://localhost:8000/dashboard",
+              "method": "GET",
+              "evidence": "Content-Security-Policy header is missing"
+            }
+          ],
+          "solution": "<p>Define a Content-Security-Policy that allows only the sources required by the application, and test it in report-only mode before enforcing it.</p>",
+          "reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP</p>",
+          "cweid": "693",
+          "wascid": "15",
+          "sourceid": "1"
+        },
+        {
+          "pluginid": "10023",
+          "alert": "Information Disclosure - Debug Error Messages",
+          "name": "Information Disclosure - Debug Error Messages",
+          "riskcode": "0",
+          "confidence": "3",
+          "riskdesc": "Informational (High)",
+          "desc": "<p>The response appears to contain a framework debug error message. Detailed errors can reveal implementation details to an attacker.</p><p>This is a sample alert used to demonstrate the SecureScan review workflow.</p>",
+          "instances": [
+            {
+              "uri": "http://localhost:8000/products/999999",
+              "method": "GET",
+              "evidence": "SQLSTATE[42S02]: Base table or view not found"
+            }
+          ],
+          "solution": "<p>Disable debug mode in production and return generic error pages to users while logging details server-side.</p>",
+          "reference": "<p>https://owasp.org/www-community/Improper_Error_Handling</p>",
+          "cweid": "209",
+          "wascid": "12",
+          "sourceid": "1"
+        }
+      ]
+    }
+  ]
+}

@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Inventory\InventoryController;
 use App\Http\Controllers\Procurement\ProcurementController;
 use App\Http\Controllers\Production\ProductionController;
+use App\Http\Controllers\Security\SecurityAssessmentController;
 use App\Http\Controllers\System\AuditTrailController;
 use App\Http\Controllers\System\ProfileController;
 use App\Http\Controllers\System\StaffController;
@@ -30,6 +31,22 @@ Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [AccountingController::class, 'dashboard'])
         ->name('dashboard');
+
+    // Security Assessment (OWASP ZAP import, AI analysis, human verification)
+    Route::prefix('security')->name('security.')->middleware('role:admin')->group(function () {
+        Route::get('/', [SecurityAssessmentController::class, 'index'])
+            ->name('index');
+        Route::post('/import', [SecurityAssessmentController::class, 'import'])
+            ->name('import');
+        Route::get('/findings/{finding}', [SecurityAssessmentController::class, 'show'])
+            ->name('show');
+        Route::post('/findings/{finding}/analyze', [SecurityAssessmentController::class, 'analyze'])
+            ->name('analyze');
+        Route::post('/findings/{finding}/remediate', [SecurityAssessmentController::class, 'remediate'])
+            ->name('remediate');
+        Route::patch('/findings/{finding}/verify', [SecurityAssessmentController::class, 'verify'])
+            ->name('verify');
+    });
 
     // Inventory
     Route::get('/inventory', [InventoryController::class, 'index'])
