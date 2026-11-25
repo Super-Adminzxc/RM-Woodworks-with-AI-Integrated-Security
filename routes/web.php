@@ -38,6 +38,8 @@ Route::middleware('auth')->group(function () {
             ->name('index');
         Route::post('/import', [SecurityAssessmentController::class, 'import'])
             ->name('import');
+        Route::delete('/scans', [SecurityAssessmentController::class, 'clear'])
+            ->name('clear');
         Route::get('/findings/{finding}', [SecurityAssessmentController::class, 'show'])
             ->name('show');
         Route::post('/findings/{finding}/analyze', [SecurityAssessmentController::class, 'analyze'])

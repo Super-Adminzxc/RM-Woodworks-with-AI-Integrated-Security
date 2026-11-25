@@ -159,6 +159,48 @@ class SecurityAssessmentTest extends TestCase
         $this->assertDatabaseCount('findings', 2);
     }
 
+    public function test_admin_can_clear_all_scans_and_findings(): void
+    {
+        $admin = $this->admin();
+
+        $this->actingAs($admin)->post(route('security.import'), [
+            'report' => $this->reportUpload(),
+        ]);
+
+        $this->assertSame(1, Scan::count());
+        $this->assertSame(2, Finding::count());
+
+        $response = $this->actingAs($admin)->delete(route('security.clear'));
+
+        $response->assertRedirect(route('security.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertSame(0, Scan::count());
+        $this->assertSame(0, Finding::count());
+        $this->assertDatabaseHas('system_activities', [
+            'type' => 'Security',
+            'action' => 'Cleared scan data',
+        ]);
+
+        $this->actingAs($admin)->get(route('security.index'))
+            ->assertOk()
+            ->assertSee('No findings match this view');
+    }
+
+    public function test_non_admin_cannot_clear_scans(): void
+    {
+        $this->actingAs($this->admin())->post(route('security.import'), [
+            'report' => $this->reportUpload(),
+        ]);
+
+        $clerk = User::factory()->create(['role' => 'sales_clerk']);
+
+        $this->actingAs($clerk)->delete(route('security.clear'))->assertForbidden();
+
+        $this->assertSame(1, Scan::count());
+        $this->assertSame(2, Finding::count());
+    }
+
     public function test_finding_details_show_original_evidence_and_separate_ai_sections(): void
     {
         $this->actingAs($this->admin())->post(route('security.import'), [

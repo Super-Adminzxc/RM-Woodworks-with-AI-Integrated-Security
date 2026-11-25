@@ -10,6 +10,7 @@ use App\Services\Security\SecurityAiService;
 use App\Services\Security\ZapReportImporter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use RuntimeException;
@@ -103,6 +104,36 @@ class SecurityAssessmentController extends Controller
         return redirect()
             ->route('security.index', [], 303)
             ->with('success', $message);
+    }
+
+    public function clear(): RedirectResponse
+    {
+        $scanCount = Scan::count();
+        $findingCount = Finding::count();
+
+        if ($scanCount === 0 && $findingCount === 0) {
+            return redirect()
+                ->route('security.index', [], 303)
+                ->with('success', 'SecureScan is already clean. There are no scans or findings to clear.');
+        }
+
+        DB::transaction(function () {
+            // Delete findings first so this also works if a database does not
+            // enforce the cascade relationship.
+            Finding::query()->delete();
+            Scan::query()->delete();
+        });
+
+        SystemActivity::log(
+            'Security',
+            'Cleared scan data',
+            "Cleared {$scanCount} scan(s) and {$findingCount} finding(s) from SecureScan.",
+            'red'
+        );
+
+        return redirect()
+            ->route('security.index', [], 303)
+            ->with('success', "Cleared {$scanCount} scan(s) and {$findingCount} finding(s). SecureScan is ready for a new import.");
     }
 
     public function show(Finding $finding, SecurityAiService $ai): View

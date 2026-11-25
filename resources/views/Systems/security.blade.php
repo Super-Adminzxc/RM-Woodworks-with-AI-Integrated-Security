@@ -23,6 +23,21 @@
                 <span class="px-3 py-1.5 rounded-xl text-xs font-bold border {{ $aiConfigured ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-100 text-amber-800 border-amber-300' }}">
                     AI: {{ $aiConfigured ? $aiProvider . ($aiModel ? ' · ' . $aiModel : '') : 'Not configured' }}
                 </span>
+                @if($stats['total'] > 0 || $recentScans->isNotEmpty())
+                    <form action="{{ route('security.clear') }}" method="POST"
+                          onsubmit="return confirm('Delete all imported scans and findings? This also removes AI analysis and human verification decisions. This cannot be undone.');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-red-700 border border-red-200 hover:bg-red-50 hover:border-red-300 transition-colors"
+                                title="Clear all scans and findings before importing a new report">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Clear all scans
+                        </button>
+                    </form>
+                @endif
                 <a href="{{ asset('samples/rmwoodworks-zap-sample-report.json') }}" download
                    class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-amber-200 hover:bg-amber-100 transition-colors">
                     Download sample ZAP fixture
