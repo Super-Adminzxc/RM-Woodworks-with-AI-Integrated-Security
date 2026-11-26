@@ -255,24 +255,77 @@
             // Show loading indicator on navigation
             document.addEventListener('DOMContentLoaded', function() {
                 const loader = document.getElementById('pageLoader');
-                const links = document.querySelectorAll('a:not([target="_blank"])');
-                
+                let loaderTimeout = null;
+
+                function hidePageLoader() {
+                    if (loaderTimeout) {
+                        clearTimeout(loaderTimeout);
+                        loaderTimeout = null;
+                    }
+
+                    loader.classList.add('hidden');
+                    loader.classList.remove('flex');
+                }
+
+                function showPageLoader() {
+                    loader.classList.remove('hidden');
+                    loader.classList.add('flex');
+
+                    // Failsafe: never leave the page blocked if navigation or a
+                    // download does not trigger a normal page load.
+                    if (loaderTimeout) {
+                        clearTimeout(loaderTimeout);
+                    }
+
+                    loaderTimeout = setTimeout(hidePageLoader, 12000);
+                }
+
+                const links = document.querySelectorAll('a[href]');
+
                 links.forEach(link => {
                     link.addEventListener('click', function(e) {
-                        // Only show loader for navigation links (not javascript:void, #, or current page)
                         const href = this.getAttribute('href');
-                        if (href && href !== '#' && !href.startsWith('javascript:') && href !== window.location.pathname) {
-                            loader.classList.remove('hidden');
-                            loader.classList.add('flex');
+                        const opensNewTab = this.target === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey;
+                        const isDownload = this.hasAttribute('download');
+                        const isNonNavigationLink = !href
+                            || href === '#'
+                            || href.startsWith('javascript:')
+                            || href.startsWith('mailto:')
+                            || href.startsWith('tel:')
+                            || href.startsWith('blob:')
+                            || href.startsWith('data:');
+
+                        if (opensNewTab || isDownload || isNonNavigationLink) {
+                            return;
                         }
+
+                        let destination;
+
+                        try {
+                            destination = new URL(href, window.location.href);
+                        } catch (error) {
+                            return;
+                        }
+
+                        const isCurrentPage = destination.pathname === window.location.pathname
+                            && destination.search === window.location.search;
+
+                        // Static files should download/open directly without
+                        // showing the full-page navigation loader.
+                        const isFileDownload = /\.(pdf|json|zip|csv|xlsx?|docx?|png|jpe?g|gif|svg|txt|xml)$/i
+                            .test(destination.pathname);
+
+                        if (isCurrentPage || isFileDownload) {
+                            return;
+                        }
+
+                        showPageLoader();
                     });
                 });
 
-                // Hide loader when page is fully loaded (backup)
-                window.addEventListener('pageshow', function() {
-                    loader.classList.add('hidden');
-                    loader.classList.remove('flex');
-                });
+                // Hide loader when page is fully loaded or restored from cache.
+                window.addEventListener('pageshow', hidePageLoader);
+                window.addEventListener('load', hidePageLoader);
                 
                 // Header Scroll Animation
                 const mainContent = document.querySelector('.overflow-y-auto');
